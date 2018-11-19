@@ -32,7 +32,6 @@ object MinAvgWaitingTime {
       }
     }
     val waitingTimes = rec(None, sortedList, List.empty[Int])
-    println(waitingTimes)
     waitingTimes match {
       case Nil => 0
       case _ => (sumAsLong(waitingTimes) / sortedList.size.toLong).toInt
@@ -59,13 +58,15 @@ object MinAvgWaitingTime {
   def main(args: Array[String]) {
     val numberOfCustomers = getNumberOfCustomerOrders(StdIn.readLine())
     val customerOrders = (1 to numberOfCustomers).map( _ => getCustomerOrder(StdIn.readLine())).toList
-    println(customerOrders)
     println(processOrders(customerOrders))
 
 //     test()
   }
 
 //  private def test(): Unit = {
+//    println(getNumberOfCustomerOrders("1")) //1
+//    println(getCustomerOrder("1 6")) //List(CustomerOrder(1,6,0)
+//
 //    println(processOrders(List()))  //0
 //    println(processOrders(List(CustomerOrder(0,3), CustomerOrder(0,3), CustomerOrder(0,3)))) // must equals 6
 //    println(processOrders(List(CustomerOrder(0,3), CustomerOrder(1,9), CustomerOrder(2,6)))) // must equals 9
