@@ -23,7 +23,9 @@ object OrdersProcessor {
             val overlappingCustomerOrders = customerOrders.filter(_.timeToOrder <= lastProcessedCustomerOrder.waitingTime)
             val optimizedCustomerOrders = overlappingCustomerOrders match {
               case Nil => CustomerOrder(customerOrders.head.timeToOrder, customerOrders.head.timeToCook, customerOrders.head.timeToCook) :: customerOrders.tail
-              case _ => overlappingCustomerOrders.map(co => CustomerOrder(co.timeToOrder, co.timeToCook, computeWaitingTime(Some(lastProcessedCustomerOrder), co))).sortBy(_.waitingTime)
+              case _ =>
+                val customerOrderWithLowestWaitingTime = overlappingCustomerOrders.map(co => CustomerOrder(co.timeToOrder, co.timeToCook, computeWaitingTime(Some(lastProcessedCustomerOrder), co))).minBy(_.waitingTime)
+                customerOrderWithLowestWaitingTime :: (customerOrders diff List(CustomerOrder(customerOrderWithLowestWaitingTime.timeToOrder, customerOrderWithLowestWaitingTime.timeToCook)))
             }
             rec(Some(optimizedCustomerOrders.head), optimizedCustomerOrders.tail, optimizedCustomerOrders.head.waitingTime :: waitingTimes)
           case (None, customerOrder :: tail) =>
@@ -46,7 +48,7 @@ object OrdersProcessor {
       case Some(lastProcessedCustomerOrder) if lastProcessedCustomerOrder.waitingTime < currentCustomerOrder.timeToOrder =>
         currentCustomerOrder.timeToCook
       case Some(lastProcessedCustomerOrder) =>
-        lastProcessedCustomerOrder.timeToOrder + lastProcessedCustomerOrder.waitingTime - currentCustomerOrder.timeToOrder.toLong + currentCustomerOrder.timeToCook.toLong
+        lastProcessedCustomerOrder.timeToOrder.toLong + lastProcessedCustomerOrder.waitingTime - currentCustomerOrder.timeToOrder.toLong + currentCustomerOrder.timeToCook.toLong
     }
   }
 
